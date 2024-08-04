@@ -1,1 +1,35 @@
-와! 인생게임 메인이다!
+{% comment %} 와! 인생게임 메인이다! {% endcomment %}
+
+
+단식 종료: 
+<div id="countdown"></div>
+
+<script>
+    // 목표 시간 설정 (예시: 2024년 12월 31일 23시 59분 59초)
+const countdownDate = new Date('August 7, 2024 06:00:00').getTime();
+
+// 카운트다운 함수
+function updateCountdown() {
+    const now = new Date().getTime();
+    const distance = countdownDate - now;
+
+    // 시간, 분, 초 계산
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    // HTML 요소에 결과 출력
+    document.getElementById('countdown').innerHTML = days + 'd ' + hours + 'h '
+        + minutes + 'm ' + seconds + 's ';
+
+    // 시간이 지나면 메시지 변경
+    if (distance < 0) {
+        clearInterval(x);
+        document.getElementById('countdown').innerHTML = "EXPIRED";
+    }
+}
+
+// 1초마다 함수 호출
+const x = setInterval(updateCountdown, 1000);
+</script>
