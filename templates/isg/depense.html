@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Depense</title>
+</head>
+<body>
+    <h1>Depense</h1>
+    <p>Welcome to the Depense page!</p>
+    <div class="list">
+    </div>
+</body>
+<script>
+
+    const setMonseters = (monsters) => {
+        const list = document.querySelector(".list");
+        for(const monster of monsters.monster_list) {
+            const item = document.createElement("div");
+            item.innerHTML = `
+                <h2>${monster.name}</h2>
+                <p>${monster.desc}</p>
+            `;
+            list.appendChild(item);
+        }
+    };
+
+    const url1 = "/isg/m/list/";
+    fetch(url1)
+    .then((response) => response.json())
+    .then((data) => {
+        setMonseters(data);
+    });
+
+
+</script>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sogsagim List</title>
+</head>
+<body>
+    <h1>Sogsagim List</h1>
+    
+    <ul>
+        {% for sogsag in sogsag_list %}
+            <li>{{ sogsag }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+<script>
+    // Make an API call to retrieve the sogsag list
+    fetch('/api/sogsagim')
+        .then(response => response.json())
+        .then(data => {
+            // Get the ul element
+            const ul = document.querySelector('ul');
+
+            // Loop through the sogsag list and create li elements
+            data.forEach(sogsag => {
+                const li = document.createElement('li');
+                li.textContent = sogsag;
+                ul.appendChild(li);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+</script>

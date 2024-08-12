@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>속삭임</title>
+</head>
+<body>
+    <input type="hidden" id="apiurl" value="{% url 'isg:set_sogsag' %}">
+    <input type="hidden" id="ssgl" value="{% url 'isg:get_sogsag_list' %}">
+    <form method="POST" action="{% url 'isg:set_sogsag' %}" onsubmit="return false;">
+        {% csrf_token %}
+        <label for="content">속삭임:</label>
+        <input type="text" id="content" name="content" required>
+        <br>
+        {% comment %} <input type="submit" value="제출"> {% endcomment %}
+        <input type="button" id="btnapi" value="API">
+    </form>
+    <div id="sogsagim">
+    <div>
+</body>
+<script>
+
+
+
+    document.getElementById('btnapi').addEventListener('keypress', function(event) {
+        debugger;
+        if (event.key === 'Enter') {
+            // Open alert dialog
+
+            debugger;
+            CallAPI();
+
+            document.getElementById('btnapi').value = "";
+        }
+    });
+
+
+    window.onload = function() {
+        document.getElementById('content').focus();
+        btnapi.onclick = function() {
+            CallAPI();
+        }
+    }
+
+    const GEBIV = (id) => {
+        return document.getElementById(id).value;
+    }
+
+    const CallAPI = async () => {
+        const params = {
+            content: GEBIV('content')
+            // Add more parameters as needed
+        };
+    
+        const url = GEBIV('apiurl');
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(params),
+        });
+    
+        if (response.ok) {
+            console.log('Success');
+            debugger;
+            get_sogsag_list();
+
+            // Handle successful response
+        } else {
+            console.log('Error');
+            // Handle error response
+        }
+    };
+
+
+    async function get_sogsag_list() {
+
+        document.getElementById('sogsagim').innerHTML = '';
+
+        //const responseJson = await response.json();
+        const ssglUrl = GEBIV('ssgl');
+        const ssglResponse = await fetch(ssglUrl);
+        const ssglJson = await ssglResponse.json();
+
+        const ul = document.createElement('ul');
+        for (const item of ssglJson.sogsag_list) {
+
+            const li = document.createElement('li');
+
+            li.textContent = `id: ${item.id}, content: ${item.content}, regdate: ${item.reg_date}`;
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'x';
+            deleteButton.addEventListener('click', () => {
+                deleteSogsag(item.id);
+            });
+
+            li.appendChild(deleteButton);
+
+            ul.appendChild(li);
+        }
+
+        document.getElementById('sogsagim').appendChild(ul);
+    }
+
+    function deleteSogsag(sogsagId) {
+        fetch(`/isg/s/d/${sogsagId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message); // Handle the response data
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+        get_sogsag_list();
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Your code here
+        // Call the function or write your logic here
+        get_sogsag_list();
+
+        //setInterval(() => {
+        //    console.log('focus');
+        //    const content = document.getElementById('content');
+        //    if (document.activeElement !== content) {                
+        //        content.focus();
+        //    }
+        //}, 10000);
+
+    });
+
+</script>
+</html>
