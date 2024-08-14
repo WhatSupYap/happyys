@@ -9,7 +9,6 @@ class Monster(models.Model):
 
     def __str__(self):
         return self.name
-    
 
 class Sogsag(models.Model):
     id = models.AutoField(primary_key=True)

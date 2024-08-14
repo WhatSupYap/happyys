@@ -24,5 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('blog/', include('blog.urls')),
     path('isg/', include('isg.urls')),
+    path('samples/', include('samples.urls')),
     path('api/hello/', hello_rest_api, name='hello_rest_api'),
 ]

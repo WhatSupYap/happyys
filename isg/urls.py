@@ -1,7 +1,7 @@
 from django.urls import path
 from django.views.generic import TemplateView
 from isg.views.monster_views import get_monster_list, create_monster
-from isg.views.sogsag_views import set_sogsag, get_sogsag_list, del_sogsag
+from isg.views.sogsag_views import set_sogsag, get_sogsag_list, del_sogsag, upload_file
 
 
 #별칭
@@ -20,4 +20,6 @@ urlpatterns = [
     #path("s/l", TemplateView.as_view(template_name='isg/sogsagim_list.html'), name='sogsagim_list'),
     path("s/l", get_sogsag_list, name='get_sogsag_list'),
     path("s/d/<int:sogsag_id>", del_sogsag, name='sogsagim_delete'),
+    path("s/fu", upload_file, name='upload_file'),
+    #path('upload/success/', base_views.upload_success, name='file_upload_success'),
 ]

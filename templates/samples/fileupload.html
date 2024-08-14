@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>샘플 > 파일업로드</title>
+</head>
+<body>
+    <h1><a href="/samples">샘플</a> > 파일업로드</h1>
+    <ul>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Upload</button>
+        </form>
+    </ul>
+</body>
+</html>

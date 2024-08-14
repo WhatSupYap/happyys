@@ -6,30 +6,32 @@
 <body>
     <input type="hidden" id="apiurl" value="{% url 'isg:set_sogsag' %}">
     <input type="hidden" id="ssgl" value="{% url 'isg:get_sogsag_list' %}">
-    <form method="POST" action="{% url 'isg:set_sogsag' %}" onsubmit="return false;">
+    {% comment %} <form method="POST" action="{% url 'isg:set_sogsag' %}" onsubmit="return false;"> {% endcomment %}
+        <form id="form1" method="POST" action="{% url 'isg:upload_file' %}">
+            {% csrf_token %}
+            <input type="file" name="file" id="file">
+            <input type="submit" value="Upload">
+        </form>
+    <div id="divf">
         {% csrf_token %}
         <label for="content">속삭임:</label>
         <input type="text" id="content" name="content" required>
         <br>
         {% comment %} <input type="submit" value="제출"> {% endcomment %}
         <input type="button" id="btnapi" value="API">
-    </form>
+    </div>
+    {% comment %} </form> {% endcomment %}
     <div id="sogsagim">
-    <div>
+    </div>
+    
+    
 </body>
 <script>
-
-
-
-    document.getElementById('btnapi').addEventListener('keypress', function(event) {
-        debugger;
+    document.getElementById('content').addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
             // Open alert dialog
-
-            debugger;
-            CallAPI();
-
-            document.getElementById('btnapi').value = "";
+            CallAPI2();
+            document.getElementById('content').value = "";
         }
     });
 
@@ -45,11 +47,43 @@
         return document.getElementById(id).value;
     }
 
+
+    
+
+    const CallAPI2 = async () => {
+        
+        const divf = document.getElementById('divf');
+        const formData = new FormData();
+        for (const input of divf.querySelectorAll("input:not([type='button'])")) {
+            formData.append(input.name, input.value);
+        }
+
+    
+        const url = GEBIV('apiurl');
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData,
+        });
+    
+        if (response.ok) {
+            console.log('Success');
+            get_sogsag_list();
+
+            // Handle successful response
+        } else {
+            console.log('Error');
+            // Handle error response
+        }
+    };
+
     const CallAPI = async () => {
         const params = {
             content: GEBIV('content')
             // Add more parameters as needed
         };
+
+
+        
     
         const url = GEBIV('apiurl');
         const response = await fetch(url, {
@@ -62,7 +96,6 @@
     
         if (response.ok) {
             console.log('Success');
-            debugger;
             get_sogsag_list();
 
             // Handle successful response

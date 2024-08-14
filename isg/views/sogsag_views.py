@@ -1,9 +1,13 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from django.views.decorators.csrf import csrf_exempt
 from ..models import Sogsag
 
+
+
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def set_sogsag(request):
@@ -46,7 +50,7 @@ for sogsag in Sogsag.objects.all():
     sogsag.delete()
     
 
-@api_view(['POST'])
+#@api_view(['POST'])
 @permission_classes([AllowAny])
 def upload_file(request):
     if request.method == 'POST':
