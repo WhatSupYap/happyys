@@ -1,0 +1,120 @@
+{% extends 'samples/base.html' %}
+{% block title %}파일업로드{% endblock %}
+{% block head %}
+<style>
+    ul {
+        list-style: none;
+    }
+
+    ul li {
+        margin: 10px 0;
+    }
+
+    ul li label {
+        display: inline-block;
+        width: 100px;
+    }
+
+    ul li input {
+        width: 300px;
+    }
+
+    .item_box {
+        margin: 20px;
+        padding: 20px;
+        border: 1px solid #ccc;
+    }
+
+    .uploadImage {
+        width: 100px;
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<h1><a href="/samples">샘플 리스트</a> > 파일업로드</h1>
+<div class="item_box">
+    <ul>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <ul>
+                <li>
+                    <label>제목</label>
+                    <input type="text" name="title" />
+                </li>
+                <li>
+                    <label>본문</label>
+                    <input type="text" name="content" />
+                </li>
+                <li>
+                    <label>파일</label>
+                    <input type="file" name="file" />
+                </li>
+            </ul>
+        </form>
+        <button onclick="uploadFile()">Upload (AJAX)</button>
+    </ul>
+</div>
+<div class="item_box">
+    <ul class="sampleList">
+    </ul>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    function uploadFile() {
+        const fileInput = document.querySelector('input[type="file"]');
+        const content = document.querySelector('input[type="text"][name="content"]');
+        const title = document.querySelector('input[type="text"][name="title"]');
+        const csrfmiddlewaretoken = document.querySelector('input[type="hidden"][name="csrfmiddlewaretoken"]');
+        const file = fileInput.files[0];
+
+        const formData = new FormData();
+        formData.append('content', content.value);
+        formData.append('title', title.value);
+        formData.append('file', file);
+        formData.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+        // csrfmiddlewaretoken
+
+        fetch('/samples/add_sampledoc', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('File uploaded successfully');
+                getSampleList();
+            } else {
+                console.error('File upload failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function getSampleList() {
+        fetch('/samples/get_sampledoc')
+        .then(response => response.json())
+        .then(data => {
+            const sampleList = document.querySelector('.sampleList');
+            sampleList.innerHTML = ''; // Clear the existing list
+
+            data.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `Title: ${item.title}, Content: ${item.content}`;
+                sampleList.appendChild(li);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    window.addEventListener('load', function() {
+        const content = document.querySelector('input[type="text"][name="content"]');
+        const title = document.querySelector('input[type="text"][name="title"]');
+        content.value = generateRandomName();
+        title.value = generateRandomName();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends '../base.html' %}
+{% load blog_filter %}
+{% block title %}WHAT SUP's Blog{% endblock %}
+{% block head %}
+<style>
+    body {
+        background-color: #f0f0f0;
+    }
+
+    main {
+        width: 1000px;
+    }
+
+    header {
+        {% comment %} height: 80px;
+        background-color: #333;
+        color: white; {% endcomment %}
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-title {
+        font-size: 2em;
+    }
+</style>
+{% endblock %}
+{% block content %}
+
+<!--
+
+작업 리스트
+1 . main 
+
+-->
+<main>
+    <header>
+        <div class="header-title">WHAT SUP</div>
+        <div>메뉴1 | 메뉴2 | 찾기1</div>
+    </header>
+    <content>
+        <div class="container">
+            <h5 class="my-3 border-bottom pb-2" id="hiddenButton" style="cursor:pointer">New Post</h5>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!-- 오류표시 Start -->
+                {% if vaild_errors or error %}
+                <div class="alert alert-danger" role="alert">
+                    {% for field, messages in vaild_errors.items %}
+                    <div>
+                        {% for msg in messages %}
+                        <strong>{{ field }}:</strong> {{ msg }}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                    {% if error %}
+                    <div>
+                        <strong>오류2:</strong> {{ error }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                <!-- 오류표시 End -->
+                <div class="mb-3">
+                    <label for="title" class="form-label">제목</label>
+                    <input type="text" class="form-control" name="title" id="title"
+                        value="{{ p_title|default_if_none:'' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="category" class="form-label">카테고리</label>
+                    <select class="form-select" name="category" id="category">
+                        <option value="">선택하세요</option>
+                        {% for category in p_category_list %}
+                        <option value="{{ category.id }}"
+                            {% if category_id == category.id %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="content" class="form-label">내용</label>
+                    <textarea class="form-control" name="content"
+                            id="content" rows="10">{{ p_content|default_if_none:'' }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="tags" class="form-label">태그</label>
+                    <input type="text" class="form-control" name="tags" id="tags" value="{{ p_tags|tags_to_string }}">
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">이미지 1</label>
+                    <input type="file" class="form-control" name="images" id="image1">
+                    <label for="image" class="form-label">이미지 2</label>
+                    <input type="file" class="form-control" name="images" id="image2">
+                    <label for="image" class="form-label">이미지 3</label>
+                    <input type="file" class="form-control" name="images" id="image3">
+                </div>
+                <button type="submit" class="btn btn-primary">submit</button>
+            </form>
+        </div>
+    </content>
+</main>
+{% endblock%}
+{% block script %}
+<script>
+
+    document.getElementById('hiddenButton').addEventListener('click', function () {
+        setRandomText();
+    });
+
+    const setRandomText = () => {
+        document.getElementById('title').value = generateRandomName();
+        document.getElementById('content').value = getRandomLyric();
+    }
+
+    {% comment %} function getRandomLyric() {
+        const lyrics = [
+            'I am happy',
+            'I am sad',
+            'I am angry',
+            'I am excited',
+            'I am calm',
+            'I am silly',
+            'I am serious',
+            'I am crazy',
+            'I am lazy',
+            'I am smart'
+        ];
+        return lyrics[Math.floor(Math.random() * lyrics.length)];
+    } {% endcomment %}
+
+    {% comment %} function generateRandomName() {
+        const adjectives = ['Happy', 'Sad', 'Angry', 'Excited', 'Calm', 'Silly', 'Serious', 'Crazy', 'Lazy', 'Smart'];
+        const nouns = ['Dog', 'Cat', 'Bird', 'Fish', 'Elephant', 'Tiger', 'Lion', 'Bear', 'Wolf', 'Fox'];
+        const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+        const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+        return `${randomAdjective} ${randomNoun}`;
+    } {% endcomment %}
+
+    document.addEventListener('DOMContentLoaded', function () {
+        //document.getElementById('title').value = generateRandomName();
+        //document.getElementById('content').value = getRandomLyric();
+    });
+
+    {% comment %} $(document).ready(function () {
+        $('#content').summernote({
+            height: 300,
+            minHeight: null,
+            maxHeight: null,
+            focus: true
+        });
+    }); {% endcomment %}
+</script>
+{% endblock %}

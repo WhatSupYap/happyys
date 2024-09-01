@@ -1,24 +1,59 @@
-와! 블로그 메인이다!
+{% extends '../base.html' %}
+{% block title %}WHAT SUP's Blog{% endblock %}
+{% block head %}
+<style>
+    body {
+        background-color: #f0f0f0;
+    }
 
-<script>
-    console.log('블로그 메인 페이지 스크립트');
-    const url1 = "/api/hello/";
-    {% comment %} fetch(url1)
-    .then((response) => response.json())
-    .then((data) => console.log(data)); {% endcomment %}
+    main {
+        width: 1000px;
+    }
 
+    header {
+        {% comment %} height: 80px;
+        background-color: #333;
+        color: white; {% endcomment %}
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-    fetch(url1, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            title: "Test",
-            body: "I am testing!",
-            userId: 1,
-        }),
-    })
-        .then((response) => console.log(response));
+    .header-title {
+        font-size: 2em;
+    }
+</style>
+{% endblock %}
+{% block content %}
 
-</script>
+<!--
+
+작업 리스트
+1 . main 
+
+-->
+<main>
+    <header>
+        <div class="header-title">WHAT SUP</div>
+        <div>메뉴1 | 메뉴2 | 찾기1</div>
+    </header>
+    <content>
+        {% if post_list %}
+            <ul>
+            {% for post in post_list %}
+                <li><a href="{% url 'blog:post_detail' post.id %}">{{ post.title }}</a>
+                {% comment %} <small>{{ post.created_at }}</small> {% endcomment %}
+                {% for tag in post.tags.all %}
+                    <span>#{{ tag.name }}</span>
+                {% endfor %}
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>새 게시물이 없습니다.</p>
+        {% endif %}
+    </content>
+</main>
+{% endblock%}

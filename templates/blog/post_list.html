@@ -1,0 +1,102 @@
+{% extends '../base.html' %}
+{% load static %}
+{% load blog_filter %}
+{% block content %}
+<div class="container my-3">
+    <table class="table">
+        <thead>
+        <tr class="table-dark">
+            <th>번호</th>
+            <th>카테고리</th>
+            <th style="width:50%">제목</th>
+            <th>글쓴이</th>
+            <th>작성일시</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if post_list %}
+        {% for post in post_list %}
+        <tr class="text-center">
+            <td>
+                <!-- 번호 = 전체건수 - 시작인덱스 - 현재인덱스 + 1 -->
+                {{ post_list.paginator.count|sub:post_list.start_index|sub:forloop.counter0|add:1 }}
+            </td>
+            <td>{{ post.category }}</td> 
+            <td class="text-start">
+                <a href="{% url 'blog:post_detail' post.id %}">{{ post.title }}</a>
+                {% if post.replies.count > 0 %}
+                <span class="text-danger small mx-2">{{ post.replies.count }}</span>
+                {% endif %}
+            </td>
+            <td>{{ post.author.username }}</td>
+            <td>{{ post.created_at|date:"Y.m.d" }}</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="5">게시글이 없습니다.</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+    <!-- 페이징처리 시작 -->
+    <ul class="pagination justify-content-center">
+        {% if post_list.paginator.page_range.start < post_list.number %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ post_list.paginator.page_range.start }}" title="처음">&lt;&lt;</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#" title="처음">&lt;&lt;</a>
+        </li>
+        {% endif %}
+        <!-- 이전페이지 -->
+        {% if post_list.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ post_list.previous_page_number }}">&lt;</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">&lt;</a>
+        </li>
+        {% endif %}
+        <!-- 페이지리스트 -->
+        {% for page_number in post_list.paginator.page_range %}
+        {% if post_list.number|add:-5 <= page_number and page_number <= post_list.number|add:5 %}
+        {% if page_number == post_list.number %}
+        <li class="page-item active" aria-current="page">
+            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+        </li>
+        {% else %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+        </li>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+        <!-- 다음페이지 -->
+        {% if post_list.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ post_list.next_page_number }}">&gt;</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">&gt;</a>
+        </li>
+        {% endif %}
+        {% if post_list.number < post_list.paginator.num_pages %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ post_list.paginator.num_pages }}" title="마지막">&gt;&gt;</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#" title="마지막">&gt;&gt;</a>
+        </li>
+        {% endif %}
+    </ul>
+    <!-- 페이징처리 끝 -->
+    {% if user.is_staff%}
+    <a href="{% url 'blog:post_write' %}" class="btn btn-primary">New Post</a>
+    {% endif %}
+</div>
+{% endblock %}

@@ -4,9 +4,29 @@
     <title>샘플 리스트</title>
 </head>
 <body>
-    <h1>샘플 리스트2</h1>
-    <ul>
-        <li><a href="./fileupload">1. 파일 업로드</a></li>
+    <h1>샘플 리스트</h1>
+    <ul id="sampleList">
+        <li>로딩중...</li>
     </ul>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const data = [
+            { title: '1. 파일 업로드 (폼이용)', url: './fileupload' },
+            { title: '2. 파일 업로드', url: './fileupload2' },
+        ];
+
+        const sampleList = document.getElementById('sampleList');
+        sampleList.innerHTML = ''; // Clear existing list items
+
+        data.forEach(item => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = item.url;
+            a.textContent = item.title;
+            li.appendChild(a);
+            sampleList.appendChild(li);
+        });
+    });
+</script>
 </html>

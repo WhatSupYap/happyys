@@ -46,8 +46,8 @@ def del_sogsag(request, sogsag_id):
     else:
         return Response({'message': 'Invalid request method'})
     
-for sogsag in Sogsag.objects.all():
-    sogsag.delete()
+#for sogsag in Sogsag.objects.all():
+#    sogsag.delete()
     
 
 #@api_view(['POST'])

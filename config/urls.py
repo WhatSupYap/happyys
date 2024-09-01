@@ -15,15 +15,27 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, re_path, include
 from django.views.generic import TemplateView
 from blog.views import hello_rest_api
+from django.conf import settings
+from common.images import get_image
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='index.html'), name='home'),
+    path('', TemplateView.as_view(template_name='index.html'), name='index'),
     path('admin/', admin.site.urls),
+    path('api/hello/', hello_rest_api, name='hello_rest_api'),
     path('blog/', include('blog.urls')),
+    path('common/', include('common.urls')),
+    path('error/404', TemplateView.as_view(template_name='common/404.html'), name='error_404'),
     path('isg/', include('isg.urls')),
     path('samples/', include('samples.urls')),
-    path('api/hello/', hello_rest_api, name='hello_rest_api'),
+    re_path(r'^images/(?P<path>.*)$', get_image, name='get_image'),
 ]
+
+# 개발환경에서만 디버그 툴바 사용
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ]

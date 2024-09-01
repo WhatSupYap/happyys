@@ -31,6 +31,7 @@ class Quest(models.Model):
     reg_date = models.DateTimeField(auto_now_add=True)
     description = models.TextField()
     reward = models.CharField(max_length=50)
+    #reward2 = models.CharField(max_length=50 , default='0')
 
     def __str__(self):
         return self.title

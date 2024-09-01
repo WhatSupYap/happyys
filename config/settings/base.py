@@ -32,16 +32,21 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'samples.apps.SamplesConfig', # 추가
-    'isg.apps.IsgConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'samples.apps.SamplesConfig', # 추가
+    'isg.apps.IsgConfig',
+    'blog.apps.BlogConfig',
     'rest_framework', # 추가
+    'common.apps.CommonConfig',
+    #'accounts.apps.AccountsConfig', # 추가
 ]
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -132,3 +137,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+#Django의 로깅 설정을 사용하여 실행된 SQL 쿼리를 로그로 남길 수 있습니다.
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'handlers': ['console'],
+#             'level': 'DEBUG',
+#         },
+#     },
+# }
+
+# 로그인 성공후 이동하는 URL
+LOGIN_REDIRECT_URL = '/'
