@@ -10,6 +10,7 @@ app_name = 'samples'
 urlpatterns = [
     path('', TemplateView.as_view(template_name=app_name + '/index.html'), name='index'),
     path('<int:sample_no>', goto_sample, name='goto_sample'),
+    path('capture_page', capture_page, name='capture_page'),
     path('fileupload', upload_file, name='upload_file'),
     path('fileupload2', upload_file2, name='fileupload2'),
     #path('fileupload2/<str:image_name>', read_uploaded_file, name='file_view'),

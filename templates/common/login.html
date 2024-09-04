@@ -15,7 +15,19 @@
             <input type="password" class="form-control" name="password" id="password"
                    value="{{ form.password.value|default_if_none:'' }}">
         </div>
-        <button type="submit" class="btn btn-primary">로그인</button>
+        <button type="submit" class="btn btn-secondary">Sign In</button>
+        <button type="button" class="btn btn-dark" id="signup">Sign Up</button>
     </form>
 </div>
+{% endblock %}
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const signup = document.getElementById('signup');
+        signup.addEventListener('click', function() {
+            location.href = "{% url 'common:signup' %}";
+        });
+    });
+</script>
 {% endblock %}

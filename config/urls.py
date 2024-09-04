@@ -20,6 +20,7 @@ from django.views.generic import TemplateView
 from blog.views import hello_rest_api
 from django.conf import settings
 from common.images import get_image
+from common.views import search
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
@@ -31,6 +32,7 @@ urlpatterns = [
     path('isg/', include('isg.urls')),
     path('samples/', include('samples.urls')),
     re_path(r'^images/(?P<path>.*)$', get_image, name='get_image'),
+    path('search/', search, name='search'),
 ]
 
 # 개발환경에서만 디버그 툴바 사용

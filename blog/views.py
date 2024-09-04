@@ -3,6 +3,7 @@ from .forms import PostForm
 from .models import Post, Reply, Category, Tag
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from rest_framework.decorators import api_view, permission_classes
@@ -24,26 +25,46 @@ def get_post_list():
     return post_list
 
 def index(request):
-    # post_list = get_post_list()
-    # context = {'post_list': post_list}
-    # return render(request, f'{template_name}/index.html', context)
+    """메인 페이지를 보여준다."""
     page = request.GET.get('page', '1')  # 페이지
     post_list = Post.objects.order_by('-created_at')
     paginator = Paginator(post_list, 10)  # 페이지당 10개씩 보여주기
     page_obj = paginator.get_page(page)
     context = {'post_list': page_obj}
-    return render(request, f'{template_name}/post_list.html', context)
+    context['suburl'] = f'{app_name}:index'
+    rtn = render(request, f'{template_name}/post_list.html', context)
+    return rtn
 
-def post_list(request):
-    # post_list = get_post_list()
-    # context = {'post_list': post_list}
-    where = {'show_yn': True, 'deleted_at': None}
+def post_list_core(kw=None, page_size=10, page=1):
+    """게시글 전체 리스트를 가져온다."""
+    # 기본 필터 조건
+    where = {
+        'show_yn': True,
+        'deleted_at': None
+    }
 
-    page = request.GET.get('page', '1')  # 페이지
-    post_list = Post.objects.filter(**where).order_by('-created_at')
+    # 빈 post_list 생성
+    post_list = Post.objects.none()
+
+     # Q 객체 생성
+    q_objects = Q()
+    if kw:
+        q_objects = Q(title__icontains=kw) | Q(content__icontains=kw) | Q(author__nickname__icontains=kw) | Q(replies__author__nickname__icontains=kw)
+        post_list = Post.objects.filter(q_objects, **where).order_by('-created_at')
+    else:
+        post_list = Post.objects.filter(**where).order_by('-created_at')
+
     paginator = Paginator(post_list, 10)  # 페이지당 10개씩 보여주기
     page_obj = paginator.get_page(page)
+    return page_obj
+
+def post_list(request):
+    """게시글 전체 리스트를 보여준다."""
+    where = {}
+    page = request.GET.get('page', '1')  # 페이지
+    page_obj = post_list_core(None, 10, page)
     context = {'post_list': page_obj}
+    context['suburl'] = f'{app_name}:index'
     return render(request, f'{template_name}/post_list.html', context)
 
 def detail(request, post_id):
@@ -56,6 +77,7 @@ def detail(request, post_id):
         'images': images,
         'tags': tags,
     }
+    context['suburl'] = f'{app_name}:index'
     return render(request, f'{template_name}/post_detail.html', context)
 
 tag_delimiter = '#'
@@ -87,9 +109,13 @@ def post_write_core(request, post=None):
                     post.images.create(uploaded_path=image)
             return redirect(f'{app_name}:post_detail', post_id=post.id)
         else:
-            return render(request, 'blog/post_write.html', {'form': form, 'categories': categories})
+            context = {'form': form, 'categories': categories}
+            context['suburl'] = f'{app_name}:index'
+            return render(request, 'blog/post_write.html', context)
     else:
-        return render(request, 'blog/post_write.html', {'form': form, 'categories': categories})
+        context = {'form': form, 'categories': categories}
+        context['suburl'] = f'{app_name}:index'
+        return render(request, 'blog/post_write.html', context)
 
 @login_required(login_url='common:login')
 def post_write_re(request, post_id):

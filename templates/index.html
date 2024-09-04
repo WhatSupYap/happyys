@@ -1,8 +1,8 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Happyys</title>
+{% load blog_filter %}
+{% block title %}HAPPYYS{% endblock %}
+{% block head %}
     <style>
         body {
             background-color: black;
@@ -24,16 +24,10 @@
             text-align: center;
             padding: 10px;
         }
-
-        {% comment %} h1 {
-            text-align: center;
-            color: white;
-            font-size: 50px;
-            padding-top: 200px;
-        } {% endcomment %}
     </style>
-</head>
-<body>
+{% endblock %}
+{% block content %}
+<div class="content">
     <header>
         <h1>Comming Soon...</h1>
         {% comment %} <ul>
@@ -41,15 +35,6 @@
             <li><a href="{% url 'isg:index' %}">인생게임</a></li>
         </ul> {% endcomment %}
     </header>
-    <div class="content">
-        <img class="thumnail" src="{% static 'images/thumnail.jpg' %}" alt="Happyys">
-    </div>
-
-{% comment %}     
-    <h1>Welcome to Happyys</h1>
-    <ul>
-        <li><a href="{% url 'blog:index' %}">blog</a></li>
-        <li><a href="{% url 'isg:index' %}">인생게임</a></li>
-    </ul> {% endcomment %}
-</body>
-</html>
+    <img class="thumnail" src="{% static 'images/thumnail.jpg' %}" alt="Happyys">
+</div>
+{% endblock %}

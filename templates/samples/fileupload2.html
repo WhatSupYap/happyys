@@ -110,7 +110,7 @@
             console.error('Error:', error);
         });
     }
-    window.addEventListener('load', function() {
+    window.addEventListener('DOMContentLoaded', function() {
         const content = document.querySelector('input[type="text"][name="content"]');
         const title = document.querySelector('input[type="text"][name="title"]');
         content.value = generateRandomName();

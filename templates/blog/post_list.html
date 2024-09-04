@@ -28,7 +28,7 @@
                 <span class="text-danger small mx-2">{{ post.replies.count }}</span>
                 {% endif %}
             </td>
-            <td>{{ post.author.username }}</td>
+            <td>{{ post.author.nickname }}</td>
             <td>{{ post.created_at|date:"Y.m.d" }}</td>
         </tr>
         {% endfor %}
@@ -43,21 +43,21 @@
     <ul class="pagination justify-content-center">
         {% if post_list.paginator.page_range.start < post_list.number %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ post_list.paginator.page_range.start }}" title="처음">&lt;&lt;</a>
+            <a class="page-link" data-page="{{ post_list.paginator.page_range.start }}" title="처음">&lt;&lt;</a>
         </li>
         {% else %}
         <li class="page-item disabled">
-            <a class="page-link" tabindex="-1" aria-disabled="true" href="#" title="처음">&lt;&lt;</a>
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="javascript:void(0)" title="처음">&lt;&lt;</a>
         </li>
         {% endif %}
         <!-- 이전페이지 -->
         {% if post_list.has_previous %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ post_list.previous_page_number }}">&lt;</a>
+            <a class="page-link" data-page="{{ post_list.previous_page_number }}" href="javascript:void(0)">&lt;</a>
         </li>
         {% else %}
         <li class="page-item disabled">
-            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">&lt;</a>
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="javascript:void(0)" href="javascript:void(0)">&lt;</a>
         </li>
         {% endif %}
         <!-- 페이지리스트 -->
@@ -65,11 +65,11 @@
         {% if post_list.number|add:-5 <= page_number and page_number <= post_list.number|add:5 %}
         {% if page_number == post_list.number %}
         <li class="page-item active" aria-current="page">
-            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+            <a class="page-link" data-page="{{ page_number }}" href="javascript:void(0)">{{ page_number }}</a>
         </li>
         {% else %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+            <a class="page-link" data-page="{{ page_number }}" href="javascript:void(0)">{{ page_number }}</a>
         </li>
         {% endif %}
         {% endif %}
@@ -77,26 +77,38 @@
         <!-- 다음페이지 -->
         {% if post_list.has_next %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ post_list.next_page_number }}">&gt;</a>
+            <a class="page-link" data-page="{{ post_list.next_page_number }}" href="javascript:void(0)">&gt;</a>
         </li>
         {% else %}
         <li class="page-item disabled">
-            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">&gt;</a>
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="javascript:void(0)">&gt;</a>
         </li>
         {% endif %}
         {% if post_list.number < post_list.paginator.num_pages %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ post_list.paginator.num_pages }}" title="마지막">&gt;&gt;</a>
+            <a class="page-link" data-page="{{ post_list.paginator.num_pages }}" href="javascript:void(0)" title="마지막">&gt;&gt;</a>
         </li>
         {% else %}
         <li class="page-item disabled">
-            <a class="page-link" tabindex="-1" aria-disabled="true" href="#" title="마지막">&gt;&gt;</a>
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="javascript:void(0)" href="javascript:void(0)" title="마지막">&gt;&gt;</a>
         </li>
         {% endif %}
     </ul>
     <!-- 페이징처리 끝 -->
     {% if user.is_staff%}
-    <a href="{% url 'blog:post_write' %}" class="btn btn-primary">New Post</a>
+    <a href="{% url 'blog:post_write' %}" class="btn btn-secondary">New Post</a>
     {% endif %}
 </div>
+{% endblock %}
+{% block script %}
+<script type='text/javascript'>
+const page_elements = document.getElementsByClassName("page-link[data-page]");
+debugger;
+Array.from(page_elements).forEach(function(element) {
+    element.addEventListener('click', function() {
+        document.getElementById('page').value = this.dataset.page;
+        document.getElementById('searchForm').submit();
+    });
+});
+</script>
 {% endblock %}

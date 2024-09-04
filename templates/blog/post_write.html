@@ -26,6 +26,11 @@
         font-size: 2em;
     }
 </style>
+<!-- https://simplemde.com/ -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<!-- https://highlightjs.org/ -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+
 {% endblock %}
 {% block content %}
 
@@ -85,11 +90,17 @@
             <label for="image" class="form-label">이미지 3</label>
             <input type="file" class="form-control" name="images" id="image3">
         </div> {% endcomment %}
-        <button type="submit" class="btn btn-primary">submit</button>
+        <button type="submit" class="btn btn-secondary">submit</button>
     </form>
 </div>
 {% endblock%}
 {% block script %}
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<!-- and it's easy to individually load additional languages -->
+{% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script> {% endcomment %}
+
 <script>
 
     document.getElementById('hiddenButton').addEventListener('click', function () {
@@ -101,42 +112,19 @@
         document.getElementById('content').value = getRandomLyric();
     }
 
-    {% comment %} function getRandomLyric() {
-        const lyrics = [
-            'I am happy',
-            'I am sad',
-            'I am angry',
-            'I am excited',
-            'I am calm',
-            'I am silly',
-            'I am serious',
-            'I am crazy',
-            'I am lazy',
-            'I am smart'
-        ];
-        return lyrics[Math.floor(Math.random() * lyrics.length)];
-    } {% endcomment %}
-
-    {% comment %} function generateRandomName() {
-        const adjectives = ['Happy', 'Sad', 'Angry', 'Excited', 'Calm', 'Silly', 'Serious', 'Crazy', 'Lazy', 'Smart'];
-        const nouns = ['Dog', 'Cat', 'Bird', 'Fish', 'Elephant', 'Tiger', 'Lion', 'Bear', 'Wolf', 'Fox'];
-        const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-        const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
-        return `${randomAdjective} ${randomNoun}`;
-    } {% endcomment %}
-
     document.addEventListener('DOMContentLoaded', function () {
         //document.getElementById('title').value = generateRandomName();
         //document.getElementById('content').value = getRandomLyric();
+        var simplemde = new SimpleMDE({
+             element: document.getElementById("content"),
+             renderingConfig: {
+                singleLineBreaks: false,
+                codeSyntaxHighlighting: true,
+            },
+        });
     });
 
-    {% comment %} $(document).ready(function () {
-        $('#content').summernote({
-            height: 300,
-            minHeight: null,
-            maxHeight: null,
-            focus: true
-        });
-    }); {% endcomment %}
+    
+
 </script>
 {% endblock %}

@@ -1,4 +1,5 @@
-import json, os
+import json, os, requests
+from django.conf import settings
 from .models import SampleDoc, UploadFile
 from common.utils import fileUtils as fs, convert_dt_to_str, rename_keys
 from django.http import HttpResponse, HttpResponseBadRequest
@@ -8,15 +9,48 @@ from rest_framework.response import Response
 from samples.forms import filetestForm
 from django.db import transaction, IntegrityError
 
+@csrf_exempt
+def capture_page(request):
+    if request.method == 'POST':
+        url = request.POST.get('url')
+        response = requests.get(url)
+        if response.status_code == 200:
+            content = response.content
+            content = content.decode('utf-8')
+            # 홈 디렉토리의 경로를 확장
+            file_path = os.path.join(settings.BASE_DIR, 'static', '000999.html')
 
+            # 파일 열기
+            with open(file_path, 'w', encoding='utf-8') as f:
+                # 파일에 쓸 내용 작성
+                f.write(content)
+
+            return HttpResponse(content, content_type='text/html')
+        else:
+            return HttpResponseBadRequest('The URL is invalid.')
+    else:
+        return HttpResponseBadRequest('The method is not allowed.')
+    
+
+@csrf_exempt
 def goto_sample(request, sample_no):
     if sample_no == 1:
         form = filetestForm()
         return render(request, 'samples/fileupload.html', {'form': form})
     elif sample_no == 2:
         return render(request, 'samples/fileupload2.html')
+    elif sample_no == 3:
+        if request.method == 'GET':
+            return render(request, 'samples/s3.html')
+        if request.method == 'POST':
+            rtn = json.dumps({'status': 'ok', 'message': ''})
+            return  HttpResponse(rtn, content_type='application/json')
     else:
-        return redirect('/error/404')
+        try:
+            context = {}
+            return render(request, f'samples/s{sample_no}.html', context)
+        except SampleDoc.DoesNotExist:
+            return redirect('/error/404')
 
 # Create your views here.
 def upload_file(request):
@@ -69,7 +103,7 @@ def add_sampledoc(request):
     except Exception as e:
         rtn = json.dumps({'status': 'error', 'message': str(e)})
     finally:
-        return HttpResponse(rtn, content_type='application/json')    
+        return HttpResponse(rtn, content_type='application/json')
 
 def get_sampledoc(request):
     tb_name = 'uploadfile'

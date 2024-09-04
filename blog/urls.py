@@ -14,9 +14,9 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('<int:post_id>/', views.detail, name='post_detail'),
     path("l/", views.post_list, name='post_list'),
+    path('pd/<int:post_id>/', views.post_remove, name='post_remove'),
     path('pw/', views.post_write, name='post_write'),
     path('pwr/<int:post_id>/', views.post_write_re, name='post_wirte_re'),
     path('rw/<int:post_id>/', views.reply_write, name='reply_write'),
-    path('pd/<int:post_id>/', views.post_remove, name='post_remove'),
-    path('rwr/<int:reply_id>/', views.reply_write_re, name='reply_write_re'),
+    path('rwr/<int:reply_id>/', views.reply_write_re, name='reply_write_re'),    
 ]

@@ -1,6 +1,8 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from common.forms import UserForm
+from django.db.models import Q
+from blog.views import post_list_core
 
 # Create your views here.
 def logout_view(request):
@@ -34,3 +36,13 @@ def login_view(request):
             return redirect('common:login')
     else:
         return render(request, 'common/login.html')
+    
+def search(request):
+    # 파라미터 받아와서 조회
+    page = request.GET.get('page', '1')  # 페이지
+    kw = request.GET.get('kw', '')  # 검색어
+
+    post_list = post_list_core(kw, 10, page)
+
+    context = {'post_list': post_list, 'kw': kw, 'page': page , 'suburl': 'blog:index'}
+    return render(request, 'blog/post_list.html', context)
