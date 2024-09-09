@@ -12,13 +12,14 @@
     {% block head %}{% endblock %}
 </head>
 <body>
+    <!-- 커튼 -->
+    <div class="layer-curtain"></div>
     <!-- 네비게이션바 -->
     {% include "common/navbar.html" %}
     {% block content %}
     {% endblock %}
 </body>
 <script src="{% static 'js/common.js' %}?=ver{% now "YmdHis" %}"></script>
-<script src="{% static 'js/nav.js' %}?=ver{% now "YmdHis" %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 {% block script %}
 {% endblock %}

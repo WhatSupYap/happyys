@@ -42,7 +42,7 @@ def search(request):
     page = request.GET.get('page', '1')  # 페이지
     kw = request.GET.get('kw', '')  # 검색어
 
-    post_list = post_list_core(kw, 10, page)
+    post_list = post_list_core(kw, 10, page, request.user)
 
     context = {'post_list': post_list, 'kw': kw, 'page': page , 'suburl': 'blog:index'}
     return render(request, 'blog/post_list.html', context)

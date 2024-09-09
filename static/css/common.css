@@ -13,3 +13,19 @@
     object-fit: cover;
 }
 
+.layer-curtain {
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 10; /* Above other content */
+}
+
+
+.color-1 {color: #F6C6AD !important;}
+.b-color-1 {border-color: #F6C6AD !important;}
+.color-2 {color: #A6CAEC !important;}
+.b-color-2 {border-color: #A6CAEC !important;}

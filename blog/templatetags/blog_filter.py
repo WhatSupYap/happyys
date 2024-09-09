@@ -19,13 +19,11 @@ def tags_to_string(tags):
 
 @register.filter
 def mark(value):
-    #extensions = ["codehilite"]
     #extensions = ["nl2br", "fenced_code", "codehilite", "tables", "sane_lists", "toc", "def_list", "attr_list"]
-    extensions = ["nl2br","fenced_code"]
-    #extensions = ["nl2br", "fenced_code"]
+    #extensions = ["nl2br","fenced_code"]#, CodeHiliteExtension(pygments_formatter=CustomHtmlFormatter)]
+    extensions = ["nl2br", "fenced_code"]
     #extensions = [CodeHiliteExtension(pygments_formatter=CustomHtmlFormatter)]
     #result = markdown.markdown(value, extensions=extensions)
-
     result = markdown.markdown(value, extensions=extensions)
     result = mark_safe(result)
     return result

@@ -1,22 +1,40 @@
-
+{% load static %}
 <!-- 사이드바 -->
-<div id="mySidebar" class="sidebar">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-    
+<div class="sidebar">
+    <a href="javascript:void(0)" class="btn-close-lp">X</a>
     <a href="/">Home</a>
     <a href="/blog">Blog</a>
     {% comment %} <a href="#">Contact</a> {% endcomment %}
 </div>
 
-<!-- 오버레이 -->
-<div id="overlay" class="overlay" onclick="closeNav()"></div>
+<!-- 검색바 -->
+<div class="searchbar">
+    <div class="searchbar-inputarea">
+        <span class="searchbar-inputarea-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-search2" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"></path>
+            </svg>
+        </span>
+        <input type="text" id="searchText" class="searchbar-inputarea-input" placeholder="Search" value="{{ kw|default_if_none:'' }}">
+        <button class="searchbar-inputarea-btnclose btn-close-lp">
+            <svg aria-hidden="true" class="svg-icon svg-icon-close" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M2.343 13.657A8 8 0 1 1 13.658 2.343 8 8 0 0 1 2.343 13.657ZM6.03 4.97a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042L6.94 8 4.97 9.97a.749.749 0 0 0 .326 1.275.749.749 0 0 0 .734-.215L8 9.06l1.97 1.97a.749.749 0 0 0 1.275-.326.749.749 0 0 0-.215-.734L9.06 8l1.97-1.97a.749.749 0 0 0-.326-1.275.749.749 0 0 0-.734.215L8 6.94Z"></path>
+            </svg>
+        </button>
+    </div>
+    <form id="searchForm2" method="get" action="{% url 'index' %}">
+        <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">
+        <input type="hidden" id="page" name="page" value="{{ page }}">
+    </form>
+</div>
+
 
 <!-- 네비게이션바 -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
     <!-- 좌측영역 -->
     <div class="h-logo-area hstack mx-sm-3">
-        <button class="btn btn-nav" onclick="openNav()">☰</button>
-        <a class="ms-2" href="{% url 'index' %}">HAPPY<span class="ty">Y</span><span class="ts">S</span></a>
+        <button type="button" class="btn btn-nav btn-open-lp" data-target="sidebar">☰</button>
+        <a class="ms-2" href="{% url 'index' %}">HAPPY<span class="color-1">Y</span><span class="color-2">S</span></a>
         {% if suburl %}
         <span class="line mx-sm-3">|</span>
         <a class="menu" href="{% url suburl %}">Blog</a>
@@ -24,17 +42,16 @@
     </div>
     <!-- 가운데 영역 -->
     <div class="nav-center align-items-center">
-        <button type="button" class="btn btn-nav searchButton">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+        <button type="button" class="btn btn-open-lp btn-search{% if kw %} b-color-2{% endif %}" data-target="searchbar">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"></path>
             </svg>
-            <span class="visually-hidden">Button</span>
+            {% if kw %}
+            <span class="inner-text color-2">{{ kw|default_if_none:'' }}</span>
+            {% else %}
+            <span class="inner-text">Type <span class="brd1">/</span> to Search</span>
+            {% endif %}
         </button>
-        <input type="text" id="searchText" class="form-control me-2 d-sm-inline" style="width: 300px;" placeholder="Search" aria-label="Search" value="{{ kw|default_if_none:'' }}">
-        <form id="searchForm" method="get" action="{% url 'index' %}">
-            <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">
-            <input type="hidden" id="page" name="page" value="{{ page }}">
-        </form>
     </div>
     <!-- 우측영역 -->
     <div class="hstack me-sm-3">
@@ -46,23 +63,5 @@
         {% endif %}
     </div>    
 </nav>
-<!-- 스크립트 --> 
-<script>
-    document.getElementById('searchText').addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            var query = event.target.value;
-            goSearch(query);
-        }
-    });
-
-    document.querySelector('.searchButton').addEventListener('click', function() {
-        var query = document.getElementById('searchText').value;
-        goSearch(query);
-    });
-
-    function goSearch(kw, index=1)
-    {
-        var url = '/search?kw=' + encodeURIComponent(kw) + '&page=' + index;
-        window.location.href = url;
-    }
- </script>
+<!-- 스크립트 -->
+ <script type="module" src="{% static 'js/navbar.js' %}?=v{% now "YmdHis" %}"></script>

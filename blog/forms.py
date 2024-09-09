@@ -6,7 +6,7 @@ class PostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ['title', 'content', 'category', 'tags']
+        fields = ['title', 'content', 'category', 'tags', 'show_yn']
 
     def clean_tags(self):
         tags = self.cleaned_data.get('tags')

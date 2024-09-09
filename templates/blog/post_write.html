@@ -82,14 +82,11 @@
             <label for="tags" class="form-label">태그</label>
             <input type="text" class="form-control" name="tags" id="tags" value="{{ form.tags.value|tags_to_string }}">
         </div>
-        {% comment %} <div class="mb-3">
-            <label for="image" class="form-label">이미지 1</label>
-            <input type="file" class="form-control" name="images" id="image1">
-            <label for="image" class="form-label">이미지 2</label>
-            <input type="file" class="form-control" name="images" id="image2">
-            <label for="image" class="form-label">이미지 3</label>
-            <input type="file" class="form-control" name="images" id="image3">
-        </div> {% endcomment %}
+        <div class="mb-3">
+            <label for="show_yn" class="form-label">공개여부</label>
+            <input type="checkbox" class="form-check-input" name="show_yn" id="show_yn"
+                {% if form.show_yn.value == 'Y' %}checked{% endif %}>
+        </div>
         <button type="submit" class="btn btn-secondary">submit</button>
     </form>
 </div>
@@ -101,20 +98,21 @@
 <!-- and it's easy to individually load additional languages -->
 {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script> {% endcomment %}
 
-<script>
+<script type="module">
+    import { Util } from '/static/js/util.js';
+    const u = new Util();
 
     document.getElementById('hiddenButton').addEventListener('click', function () {
         setRandomText();
     });
 
     const setRandomText = () => {
-        document.getElementById('title').value = generateRandomName();
-        document.getElementById('content').value = getRandomLyric();
+        document.getElementById('title').value = u.randomTextShort;
+        document.getElementById('content').value = u.randomTextLong;
+
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        //document.getElementById('title').value = generateRandomName();
-        //document.getElementById('content').value = getRandomLyric();
         var simplemde = new SimpleMDE({
              element: document.getElementById("content"),
              renderingConfig: {
@@ -123,8 +121,6 @@
             },
         });
     });
-
-    
 
 </script>
 {% endblock %}

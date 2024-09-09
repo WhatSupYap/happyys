@@ -50,7 +50,7 @@ class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='posts', default=0)
     #author = models.ForeignKey(User, on_delete=models.CASCADE)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    show_yn = models.BooleanField(default=True)
+    show_yn = models.CharField(max_length=1, default='Y')
     deleted_at = models.DateTimeField(null=True)
 
     def __str__(self):  # __unicode__ on Python 2

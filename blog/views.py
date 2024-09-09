@@ -27,7 +27,7 @@ def get_post_list():
 def index(request):
     """메인 페이지를 보여준다."""
     page = request.GET.get('page', '1')  # 페이지
-    post_list = Post.objects.order_by('-created_at')
+    post_list = post_list_core(None, 10, 1, request.user)
     paginator = Paginator(post_list, 10)  # 페이지당 10개씩 보여주기
     page_obj = paginator.get_page(page)
     context = {'post_list': page_obj}
@@ -35,24 +35,27 @@ def index(request):
     rtn = render(request, f'{template_name}/post_list.html', context)
     return rtn
 
-def post_list_core(kw=None, page_size=10, page=1):
-    """게시글 전체 리스트를 가져온다."""
+def post_list_core(kw=None, page_size=10, page=1, user=None):
+    """게시글 전체 리스트를 가져온다.
+    Q 객체는 복잡한 논리 조건을 구성할 때 사용됩니다.
+    딕셔너리는 단순한 필터링 조건을 구성할 때 사용됩니다.
+    이 둘을 함께 사용하여 복잡한 쿼리를 구성할 수 있습니다"""
     # 기본 필터 조건
     where = {
-        'show_yn': True,
         'deleted_at': None
     }
 
     # 빈 post_list 생성
     post_list = Post.objects.none()
+    # 초기화
+    q_objects = Q(show_yn='Y')
 
-     # Q 객체 생성
-    q_objects = Q()
+    if user is not None and user.is_authenticated:
+        q_objects |= Q(author_id=user.id)
     if kw:
-        q_objects = Q(title__icontains=kw) | Q(content__icontains=kw) | Q(author__nickname__icontains=kw) | Q(replies__author__nickname__icontains=kw)
-        post_list = Post.objects.filter(q_objects, **where).order_by('-created_at')
-    else:
-        post_list = Post.objects.filter(**where).order_by('-created_at')
+        q_objects &= Q(title__icontains=kw) | Q(content__icontains=kw) | Q(author__nickname__icontains=kw) | Q(replies__author__nickname__icontains=kw)
+        
+    post_list = Post.objects.filter(q_objects).filter(**where).order_by('-created_at')
 
     paginator = Paginator(post_list, 10)  # 페이지당 10개씩 보여주기
     page_obj = paginator.get_page(page)
@@ -62,7 +65,7 @@ def post_list(request):
     """게시글 전체 리스트를 보여준다."""
     where = {}
     page = request.GET.get('page', '1')  # 페이지
-    page_obj = post_list_core(None, 10, page)
+    page_obj = post_list_core(None, 10, page, request.user)
     context = {'post_list': page_obj}
     context['suburl'] = f'{app_name}:index'
     return render(request, f'{template_name}/post_list.html', context)
@@ -92,6 +95,8 @@ def post_write_core(request, post=None):
         # 태그를 먼저 저장하고 그 결과를 폼에 넣어줍니다.
         if form.is_valid():
             post = form.save(commit=False)
+            show_yn = 'Y' if request.POST.get('show_yn') == 'on' else 'N'
+            post.show_yn = show_yn
             post.updated_at = timezone.now()
             post.author = request.user
             post.save()

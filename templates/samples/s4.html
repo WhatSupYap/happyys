@@ -9,6 +9,12 @@
 <!-- 네비게이션바 -->
 {% include "common/navbar.html" %}
 <h1><a href="/samples">샘플 리스트</a> &gt; 내비게이션 상단</h1>
+<div id="popupLayer" class="popup-layer">
+    <div class="popup-content">
+        <span id="closePopup" class="close-btn">&times;</span>
+        <p>This is a popup layer!</p>
+    </div>
+</div>
 {% endblock %}
 {% block script %}
 <script>
@@ -25,6 +31,7 @@
     window.addEventListener('loDOMContentLoadedad', function() {
 
     });
+
 
     /*
         load
