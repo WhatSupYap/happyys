@@ -79,8 +79,8 @@
                     id="content" rows="10">{{ form.content.value|default_if_none:'' }}</textarea>
         </div>
         <div class="mb-3">
-            <label for="tags" class="form-label">태그</label>
-            <input type="text" class="form-control" name="tags" id="tags" value="{{ form.tags.value|tags_to_string }}">
+            <label for="tags" class="form-label">태그 ('#'로 구분해주세요 예: #태그 #해쉬태그)</label>
+            <input type="text" class="form-control" name="tags" id="tags" data-input-formating-tag="#" value="{{ tags_text }}">
         </div>
         <div class="mb-3">
             <label for="show_yn" class="form-label">공개여부</label>
@@ -113,6 +113,44 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+
+        // 상수 정의
+        const ATTRIBUTE_NAME = 'data-input-formating-tag';
+
+        // data-ael-keydown="#" 속성을 가진 모든 요소 선택
+        var elements = document.querySelectorAll(`[${ATTRIBUTE_NAME}]`);
+            
+        elements.forEach(function(element) {
+            // 공통 로직을 함수로 정의
+            const formatInput = (event) => {
+                let delimiter = element.getAttribute(ATTRIBUTE_NAME);
+                let input = event.target.value;
+                // map() : 배열의 모든값 수정, filter() : 배열의 조건에 맞는 값만 반환, part => part = truty 값만 반환
+                let parts = input.split(delimiter).map(part => part.trim()).filter(part => part);
+                // Set 객체 = 중복값 허용 X, [...Set] = Set 객체를 배열로 변환
+                let uniqueParts = [...new Set(parts)];
+                // 각 부분에 delimiter를 붙이고, 맨 앞을 제외한 부분에 공백 추가
+                let text = uniqueParts.map((part, index) => index === 0 ? `${delimiter}${part}` : ` ${delimiter}${part}`).join('');
+                // 입력된 텍스트를 변경
+                event.target.value = text + ' ';
+
+                // 해야할 작업: 여기 나중에 s5.html 이용해서 중복값 제거 만든다
+            };
+
+            // keydown 이벤트 리스너 추가
+            element.addEventListener('keydown', function(event) {
+                let delimiter = element.getAttribute(ATTRIBUTE_NAME);
+                if (event.key === delimiter) {
+                    formatInput(event);
+                }
+            });
+
+            // blur 이벤트 리스너 추가
+            element.addEventListener('blur', function(event) {
+                formatInput(event);
+            });
+        });
+
         var simplemde = new SimpleMDE({
              element: document.getElementById("content"),
              renderingConfig: {

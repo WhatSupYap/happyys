@@ -73,6 +73,14 @@ def post_list(request):
 def detail(request, post_id):
     """게시글 상세 내용을 가져온다."""
     post = get_object_or_404(Post, id=post_id)
+
+    if request.user.is_superuser == False and post.deleted_at:
+        return redirect(f'{app_name}:index')
+
+    if request.user.id != post.author.id and post.show_yn == 'N':
+        return redirect(f'{app_name}:index')
+
+
     images = post.images.all()
     tags = post.tags.all()
     context = {
@@ -88,6 +96,13 @@ tag_delimiter = '#'
 def post_write_core(request, post=None):
     """게시글을 작성/수정한다."""
     form = PostForm(instance=post)
+    
+    #            ▼ 배열중간에 값을 ' ' 값을 넣음
+    #                      ▼ 배열의 각 요소에 '#'를 붙임
+    #                                     ▼ 배열을 문자열로 변환
+    #                                                                 ▼ post가 있고 post.tags.all()이 있으면 if문 앞의 값이 참이 되어 tags_text에 저장
+    #                                                                                                  ▼ 거짓
+    tags_text = ' '.join(["#" + tag.name for tag in post.tags.all()]) if post and post.tags.all() else ''
     categories = Category.objects.all()
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES, instance=post)
@@ -100,13 +115,16 @@ def post_write_core(request, post=None):
             post.updated_at = timezone.now()
             post.author = request.user
             post.save()
-            tags = form.cleaned_data.get('tags')
+            # 태그를 저장합니다.
+            tags = request.POST.get('tags')
             if tags:
+                tags_list = tags.split(tag_delimiter)
+                tags_list = [tag.strip() for tag in tags_list if tag.strip()]
                 post.tags.clear()
-                #post.tags.all().delete()
-                for tag_name in tags:
+                for tag_name in tags_list:
                     tag, created = Tag.objects.get_or_create(name=tag_name)
-                    post.tags.add(tag)            
+                    post.tags.add(tag)
+
             if form.files:
                 images = form.files.getlist('images')
                 post.images.all().delete()
@@ -114,11 +132,11 @@ def post_write_core(request, post=None):
                     post.images.create(uploaded_path=image)
             return redirect(f'{app_name}:post_detail', post_id=post.id)
         else:
-            context = {'form': form, 'categories': categories}
+            context = {'form': form, 'categories': categories, 'tags_text': tags_text}
             context['suburl'] = f'{app_name}:index'
             return render(request, 'blog/post_write.html', context)
     else:
-        context = {'form': form, 'categories': categories}
+        context = {'form': form, 'categories': categories, 'tags_text': tags_text}
         context['suburl'] = f'{app_name}:index'
         return render(request, 'blog/post_write.html', context)
 
@@ -126,6 +144,10 @@ def post_write_core(request, post=None):
 def post_write_re(request, post_id):
     """게시글을 수정한다."""
     post = get_object_or_404(Post, id=post_id)
+    if request.user.is_superuser == False and post.deleted_at:
+        return redirect(f'{app_name}:index')
+    if request.user.id != post.author.id and post.show_yn == 'N':
+        return redirect(f'{app_name}:index')
     return post_write_core(request, post)
 
 @login_required(login_url='common:login')

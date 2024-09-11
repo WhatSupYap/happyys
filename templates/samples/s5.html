@@ -1,10 +1,17 @@
 {% extends 'samples/base.html' %}
 {% load static %}
-{% block title %}페이지 캡쳐{% endblock %}
+{% block title %}input내 색상 편집{% endblock %}
 {% block head %}
+<style>
+    .highlight {
+        color: red;
+    }
+</style>
 {% endblock %}
 {% block content %}
-<h1><a href="/samples">샘플 리스트</a> > 페이지 캡쳐</h1>
+<h1><a href="/samples">샘플 리스트</a> > input내 색상 편집</h1>
+<div id="editable" contenteditable="true"></div>
+<input type="hidden" id="hiddenInput">
 {% endblock %}
 {% block script %}
 <script>
@@ -20,6 +27,20 @@
     */
     document.addEventListener('DOMContentLoaded', function() {
 
+        console.log('DOMContentLoaded');
+        
+        document.getElementById('editable').addEventListener('input', function() {
+            let content = this.innerHTML;
+            document.getElementById('hiddenInput').value = content;
+        });
+
+        document.getElementById('editable').addEventListener('keydown', function(event) {
+            if (event.key === '#') {
+                console.log('keydown');
+                document.execCommand('insertHTML', false, '<span class="highlight">#</span>');
+                event.preventDefault();
+            }
+        });
     });
 
     /*

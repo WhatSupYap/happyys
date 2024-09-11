@@ -95,7 +95,7 @@ const page_load = function() {
 
 
 /*
-    DOMContentLoadedad
+    DOMContentLoaded
 
     1. 발생 시점: HTML 문서가 완전히 로드되고 파싱되었을 때 발생합니다.
     스타일시트, 이미지, 서브프레임 등의 리소스가 모두 로드될 필요는 없습니다.
