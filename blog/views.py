@@ -93,6 +93,18 @@ def detail(request, post_id):
 
 tag_delimiter = '#'
 
+#------------------------------------------------------------
+# purpose   : Get category list
+# edit log  : 2024.09.12 Whatsup, new
+#------------------------------------------------------------
+def get_category_list():
+    """카테고리 전체 리스트를 가져온다."""
+    category_list = Category.objects.all().order_by('sort')
+    return category_list
+
+#------------------------------------------------------------
+# log: 2024.09.12 Whatsup, new
+#------------------------------------------------------------
 def post_write_core(request, post=None):
     """게시글을 작성/수정한다."""
     form = PostForm(instance=post)
@@ -103,7 +115,7 @@ def post_write_core(request, post=None):
     #                                                                 ▼ post가 있고 post.tags.all()이 있으면 if문 앞의 값이 참이 되어 tags_text에 저장
     #                                                                                                  ▼ 거짓
     tags_text = ' '.join(["#" + tag.name for tag in post.tags.all()]) if post and post.tags.all() else ''
-    categories = Category.objects.all()
+    categories = get_category_list()
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES, instance=post)
 
