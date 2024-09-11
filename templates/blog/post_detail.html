@@ -57,7 +57,7 @@
             </div>
             <div class="my-3">
                 {% if request.user == reply.author %}
-                <a href="{% url 'pybo:reply_write_re' reply.id  %}" 
+                <a href="{% url 'blog:reply_write_re' reply.id  %}" 
                    class="btn btn-sm btn-outline-secondary">수정</a>
                 {% endif %}
             </div>
