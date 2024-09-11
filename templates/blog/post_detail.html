@@ -47,19 +47,30 @@
     <h5 class="border-bottom my-3 py-2">{{post.replies.count}}개의 답변이 있습니다.</h5>
     {% for reply in post.replies.all %}
     <div class="card my-3">
-        <div class="card-body">
-            <div class="card-text" style="white-space: pre-line;">{{ reply.content|mark }}</div>
-            <div class="d-flex justify-content-end">
+        <div class="card-body" data-reply-id="{{ reply.post_id}}{{reply.id}}">
+            <div class="card-text area-view" style="white-space: pre-line;">{{ reply.content|mark }}</div>
+            <div class="card-text area-edit hidden">
+                <form action="{% url 'blog:reply_write_re' reply.id %}" method="post" data-reply-id="{{ reply.post_id}}{{reply.id}}">
+                    {% csrf_token %}
+                    <textarea name="content" data-is-simplemde="on">{{ reply.content }}</textarea>
+                </form>
+                {% comment %} <form action="{% url 'blog:reply_remove' reply.id %}" method="post">
+                    {% csrf_token %}
+                </form> {% endcomment %}
+            </div>
+            <div class="d-flex justify-content-between">
+                <div class="my-3">
+                    {% if request.user == reply.author %}
+                    <button class="btn btn-sm btn-outline-secondary area-view" data-event="edit">수정</button>
+                    {% comment %} <button class="btn btn-sm btn-outline-secondary area-view" data-event="delete">삭제</button> {% endcomment %}
+                    <button class="btn btn-sm btn-outline-secondary area-edit hidden" data-event="submit">확인</button>
+                    <button class="btn btn-sm btn-outline-secondary area-edit hidden" data-event="cancel">취소</button>
+                    {% endif %}
+                </div>
                 <div class="badge bg-light text-dark p-2 text-start">
                     <div class="mb-2">{{ reply.author.nickname }}</div>
                     <div> {{ reply.created_at }}</div>
                 </div>
-            </div>
-            <div class="my-3">
-                {% if request.user == reply.author %}
-                <a href="{% url 'blog:reply_write_re' reply.id  %}" 
-                   class="btn btn-sm btn-outline-secondary">수정</a>
-                {% endif %}
             </div>
         </div>
     </div>
@@ -70,7 +81,7 @@
         <div class="mb-3">
             <label for="content" class="form-label">답변내용</label>
             <textarea {% if not user.is_authenticated %}disabled{% endif %}
-            name="content" id="content" class="form-control" rows="10"></textarea>
+            name="content" data-is-simplemde="on" class="form-control" rows="10"></textarea>
         </div>
         {% if user.is_authenticated %}
         <input type="submit" value="답변등록" class="btn btn-secondary">
@@ -91,17 +102,87 @@
         });
     });
 
+    
+
     document.addEventListener('DOMContentLoaded', function () {
-        //const simplemde = new SimpleMDE({
-        //    element: document.getElementById("content"),
-        //    spellChecker: false,
-        //    forceSync: true,
-        //    renderingConfig: {
-        //        codeSyntaxHighlighting: true,
-        //    },
-        //});
-        //hljs.initHighlightingOnLoad();
-        hljs.highlightAll();
+
+        document.addEventListener('click', function() {
+            console.log("activeElement: " + document.activeElement);
+        });
+
+        const ATTRIBUTE_NAME = 'data-is-simplemde';
+        var elements = document.querySelectorAll(`[${ATTRIBUTE_NAME}]`);
+            
+        elements.forEach(function(element) {
+            var simplemde = new SimpleMDE({
+                element: element,
+                renderingConfig: {
+                    singleLineBreaks: false,
+                    codeSyntaxHighlighting: true,
+                },
+            });
+
+            const attr_name_rid = 'data-reply-id';
+
+            let card_body = element.closest('.card-body');
+            if (!card_body) return;
+
+            let rid = card_body.getAttribute(attr_name_rid);
+            let editbutton = card_body.querySelector(`button[data-event="edit"]`);
+            let submitButton = card_body.querySelector(`button[data-event="submit"]`);
+            let cancelButton = card_body.querySelector(`button[data-event="cancel"]`);
+            //let deleteButton = card_body.querySelector(`button[data-event="delete"]`);
+
+            if (!editbutton || !submitButton || !cancelButton) return;
+            //if (!editbutton || !submitButton || !cancelButton || !deleteButton) return;
+
+            // 수정모드
+            editbutton.addEventListener('click', function() {
+
+                document.querySelectorAll('.area-view').forEach(function(element) {
+                    element.classList.remove('hidden');
+                });
+                document.querySelectorAll('.area-edit').forEach(function(element) {
+                    element.classList.add('hidden');
+                });
+
+                card_body.querySelectorAll('.area-view').forEach(function(element) {
+                    element.classList.add('hidden');
+                });
+                card_body.querySelectorAll('.area-edit').forEach(function(element) {
+                    element.classList.remove('hidden');
+                });
+                // 하나만 빼고
+                //editbutton.classList.add('hidden');
+
+                // 으아니 왜 포커스 안됨?
+                simplemde.codemirror.focus();
+            });
+
+            
+            submitButton.addEventListener('click', function() {
+                const form = document.querySelector(`form[${attr_name_rid}="${rid}"]`);
+                form.submit();
+            });
+            
+            cancelButton.addEventListener('click', function() {
+                document.querySelectorAll('.area-view').forEach(function(element) {
+                    element.classList.remove('hidden');
+                });
+                document.querySelectorAll('.area-edit').forEach(function(element) {
+                    element.classList.add('hidden');
+                });
+            });
+
+            deleteButton.addEventListener('click', function() {
+                if(confirm("정말로 삭제하시겠습니까?")) {
+
+                }
+            });
+
+        });
+
+       hljs.highlightAll();
     });
 </script>
 {% endblock %}

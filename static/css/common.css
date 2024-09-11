@@ -6,6 +6,10 @@
 }
  */
 
+ .hidden {
+    display: none !important;
+ }
+
 .hys-img-type1 
 {
     width: 80px;

@@ -124,7 +124,6 @@ def post_write_core(request, post=None):
                 for tag_name in tags_list:
                     tag, created = Tag.objects.get_or_create(name=tag_name)
                     post.tags.add(tag)
-
             if form.files:
                 images = form.files.getlist('images')
                 post.images.all().delete()
@@ -167,6 +166,17 @@ def post_remove(request, post_id):
 
 
 @login_required(login_url='common:login')
+def reply_remove(request, post_id, reply_id):
+    """게시글을 삭제한다."""
+    reply = get_object_or_404(Reply, id=reply_id)
+    reply.show_yn = False
+    reply.deleted_at = timezone.now()
+    reply.save()
+    return redirect(f'{app_name}:post_detail', post_id=post_id)
+
+
+
+@login_required(login_url='common:login')
 def reply_write(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     if request.method == 'POST':
@@ -187,13 +197,8 @@ def reply_write_re(request, reply_id):
     post_id = reply.post.id
     if request.method == 'POST':
         content = request.POST.get('content')
-        #create는 새로 만드는거 아닌가? save를 사용해야 하는거 아닌가?
-        reply = Reply.objects.create(
-            content=content,
-            created_at=timezone.now(),
-            updated_at=timezone.now(),
-            post=reply.post,
-            author=request.user,
-        )
+        reply.content = content
+        reply.updated_at = timezone.now()
+        reply.save()
         return redirect(f'{app_name}:post_detail', post_id=post_id)
     return redirect(f'{app_name}:post_detail', post_id=post_id)

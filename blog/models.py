@@ -91,6 +91,8 @@ class Reply(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     #author = models.ForeignKey(User, on_delete=models.CASCADE)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    show_yn = models.CharField(max_length=1, default='Y')
+    deleted_at = models.DateTimeField(null=True)
 
     def __str__(self):  # __unicode__ on Python 2
         return self.content
